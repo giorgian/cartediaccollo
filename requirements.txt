@@ -44,9 +44,6 @@ fabric==2.5.0
 Flask==1.1.1
 Flask-Admin==1.5.4
 funcsigs==1.0.2
-functools32==3.2.3.post2
-future==0.17.1
-futures==3.2.0
 git-remote-codecommit==0.5
 hvac==0.7.2
 idna==2.7

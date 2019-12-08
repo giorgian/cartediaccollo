@@ -77,7 +77,7 @@ def read_card_mongo(uuid,token):
   db = client['cartediaccollo']
   collection = db['carte']
   card = collection.find_one({"uuid": uuid})
-  print card
+  print(card)
   if token != card['token']:
     return False
   else:
@@ -90,7 +90,7 @@ def write_card_mongo(card_id,token,card_url,sender,dashboard_id):
   collection = db['carte']
   post = {"uuid": card_id, "token": token, "status": "open", "url": card_url, "sender": sender, "dashboard_id": dashboard_id}
   post_id = collection.insert_one(post).inserted_id
-  print post_id
+  print(post_id)
 
 def change_card_status(card_id,new_status):
   client = MongoClient()
@@ -129,7 +129,7 @@ def create_card_img(card_id,recipient,task,sender,token):
   )
 
   qr_data = "https://accolli.it/show?id=" + card_id + "&token=" + token  
-  print qr_data
+  print(qr_data)
   qr.add_data(qr_data)
   qr.make(fit=True)
   img = qr.make_image(fill_color="white", back_color="black")
@@ -175,7 +175,7 @@ def delete():
   dashboard_id = data_split[0]
   token = data_split[1]  
   myquery = { "uuid": request.args.get('id'), "dashboard_id": dashboard_id }
-  print "Deleted card: " + str(collection.delete_one(myquery))
+  print("Deleted card: " + str(collection.delete_one(myquery)))
   return redirect('/dashboard_accolli?token=' + request.args.get('token'), code=302)
 
 @app.route("/dashboard_accolli")
@@ -196,7 +196,7 @@ def dashboard_accolli():
   elif request.args.get('token') != None:
     print("client has token: " + request.args.get('token'))
     data = base64.b64decode(request.args.get('token'))
-    print data
+    print(data)
     dashboard_split_array = data.split(':')
     dashboard_id = dashboard_split_array[0]
     token = dashboard_split_array[1]
@@ -204,7 +204,7 @@ def dashboard_accolli():
     authenticated_dashboard = check_valid_authorization(dashboard_id,token)
 
   if authenticated_dashboard != None:
-    print "User authenticated whith uuid " + authenticated_dashboard['uuid']
+    print("User authenticated whith uuid " + authenticated_dashboard['uuid'])
     accolli = find_accolli_for_dashboard(authenticated_dashboard['uuid'])
     return render_template('dashboard_accolli.html', token=request.args.get('token'), alert=False, id=dashboard_id, dashboard_name=authenticated_dashboard['name'], accolli=accolli) 
   else:
@@ -226,7 +226,7 @@ def message():
   gmail_user = os.environ['ACCOLLI_MAIL_USER']
   gmail_password = os.environ['ACCOLLI_MAIL_PASSWORD']
   card = read_card_mongo(request.args.get('id'),request.args.get('token'))
-  print "Sending email to " + result['email']
+  print("Sending email to " + result['email'])
   try:
       server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
       server.ehlo()
@@ -246,7 +246,7 @@ Subject: %s
       server.sendmail(sent_from, to, email_text)
       server.close()
   except:
-      print 'Something went wrong...'
+      print('Something went wrong...')
 
   return redirect(card_url, code=302)
 
@@ -307,7 +307,7 @@ def cartadiaccollo():
       token = randomString(20)
       card_id = create_card_img(str(uuid.uuid1()),result['recipient'],result['task'],result['sender'],token)
       card_url = "https://accolli.it/show?id=" + card_id + "&token=" + token 
-      print card_url
+      print(card_url)
       write_card_mongo(card_id,token,card_url,result['sender'],None)
       #return send_file('static/cards/' + card_id + '.png', mimetype='image/png', attachment_filename='CartaDiAccollo.png')
       card_url = "https://accolli.it/show?id=" + card_id + "&token=" + token
